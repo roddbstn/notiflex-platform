@@ -43,5 +43,8 @@ notiflex-platform/
 6. 리소스 생성/삭제 전에는 영향 범위를 먼저 설명한다.
 7. 이미지 태그는 `latest`를 쓰지 않고 명시적 버전 (`v0.1.0` 등)을 사용한다.
 8. 토큰, 키, 비밀번호는 코드/매니페스트에 하드코딩하지 않는다 (환경변수, GitHub Secrets, Secret Manager 사용).
+9. **`kubectl delete`를 직접 실행하지 않는다** (GitOps 원칙 위반 — ArgoCD가 Git 상태로 되돌림).
+10. **`kubectl apply`를 직접 실행하지 않는다** — 배포는 항상 Git 변경 → ArgoCD를 통해 이루어진다.
+11. **변경 전에 반드시 diff를 먼저 보여준다** (변경될 내용을 확인 후 진행).
 
 > **행동 규칙 5번이 특히 중요합니다.** 이 책은 `claude --dangerously-skip-permissions` 모드로 진행하므로 kubectl 명령이 승인 없이 바로 실행됩니다. 만약 로컬에 minikube, kind 같은 다른 클러스터가 남아있고 현재 컨텍스트가 거기를 가리키고 있다면, `kubectl delete` 하나로 엉뚱한 클러스터를 지우는 사고가 날 수 있습니다. `--context`를 항상 지정하면 이런 실수를 원천 차단합니다.
