@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/health", healthHandler)
 	http.HandleFunc("/id", idHandler)
 	http.HandleFunc("/version", versionHandler)
-	fmt.Println("Notiflex API server starting on :8080")
+	fmt.Println("Notiflex API server starting on :8080 (CI test)")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		fmt.Fprintf(os.Stderr, "server error: %v\n", err)
 		os.Exit(1)
