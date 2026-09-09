@@ -1,0 +1,9 @@
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+loki:
+  serviceName: loki-gateway
+  servicePort: 80
+  servicePath: /loki/api/v1/push
