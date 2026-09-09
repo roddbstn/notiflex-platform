@@ -1,0 +1,12 @@
+# 서비스 계정 키 (절대 커밋 금지)
+*.json
+service-account*.json
+*-key.json
+
+# 환경변수 파일
+.env
+.env.*
+
+# kubeconfig
+kubeconfig
+*.kubeconfig
