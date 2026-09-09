@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"sync/atomic"
 )
 
-const version = "v0.1.1"
+const version = "v0.1.2"
 
 var counter atomic.Int64
 
@@ -29,8 +30,13 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func versionHandler(w http.ResponseWriter, r *http.Request) {
+	hostname, _ := os.Hostname()
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"version": version})
+	json.NewEncoder(w).Encode(map[string]string{
+		"version":    version,
+		"go_version": runtime.Version(),
+		"hostname":   hostname,
+	})
 }
 
 func idHandler(w http.ResponseWriter, r *http.Request) {
