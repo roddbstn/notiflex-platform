@@ -12,10 +12,10 @@
 | ch2 | 2.5 GKE 클러스터 | ✅ | 2026-09-09 | notiflex-cluster, e2-medium x2, Spot VM, Gateway API 활성화 |
 | ch2 | 2.6 빌드/배포 | ✅ | 2026-09-09 | api:v0.1.0 빌드 1분 10초, Pod 2개 Running |
 | ch2 | 2.7 첫 커밋 | ✅ | 2026-09-09 | |
-| ch3 | 3.2 GitOps 도구 | ⬜ | | |
-| ch3 | 3.3 기능 추가 | ⬜ | | |
-| ch3 | 3.4 CI | ⬜ | | |
-| ch3 | 3.5 CI-CD 연결 | ⬜ | | |
+| ch3 | 3.2 GitOps 도구 | ✅ | 2026-09-08 | ArgoCD v3.5.2 설치, notiflex-smb Application 생성, selfHeal+prune 활성화 |
+| ch3 | 3.3 기능 추가 | ✅ | 2026-09-08 | /version 엔드포인트 추가(v0.1.1→v0.1.2→revert→v0.1.3), Rolling Update 확인 |
+| ch3 | 3.4 CI | ✅ | 2026-09-08 | GitHub Actions CI, GCP_SA_KEY/GCP_PROJECT_ID Secrets 등록, sha 태그 자동 빌드 |
+| ch3 | 3.5 CI-CD 연결 | ✅ | 2026-09-08 | CI가 deployment.yaml 이미지 태그 자동 커밋+push → ArgoCD 자동 감지 배포 |
 | ch4 | 4.2 메트릭 모니터링 | ⬜ | | |
 | ch4 | 4.3 로그 수집 | ⬜ | | |
 | ch4 | 4.4 알림 | ⬜ | | |
@@ -41,14 +41,16 @@
 | 영역 | 선택 | 검토한 대안 | 선택 이유 |
 |------|------|-----------|----------|
 | 컨테이너 베이스 이미지 | scratch | Alpine, Distroless | 최소 크기, 보안 표면 최소화 |
+| GitOps 도구 | ArgoCD | Flux, Spinnaker | GKE 친화적, UI 제공, 선언적 Application CRD, 활발한 생태계 |
+| CI 도구 | GitHub Actions | Cloud Build, Jenkins | 저장소 네이티브 통합, Secrets 관리 간편, 별도 서버 불필요 |
 
 ## 현재 버전
 
 | 컴포넌트 | 버전 | 변경 이력 |
 |---------|------|----------|
 | Go | 1.25 | 초기 설정 |
-| Notiflex 이미지 | v0.1.0 | 초기 배포 |
-| ArgoCD | | |
+| Notiflex 이미지 | sha-fcfc730 (v0.1.3) | v0.1.0→v0.1.1→v0.1.2→revert→v0.1.3, CI 자동 배포 |
+| ArgoCD | v3.5.2 | ch3.2 설치 |
 | Kafka | | |
 | OTel SDK | | |
 
@@ -64,3 +66,6 @@
 |------|------|------|
 | ch2 | Python 3.9로 gcloud 설치 실패 | brew install python@3.12 후 CLOUDSDK_PYTHON 설정 |
 | ch2 | Cloud Build API 비활성화 | gcloud services enable cloudbuild.googleapis.com |
+| ch3 | Dockerfile WORKDIR 오타(/appㅊ) | Edit 도구로 /app으로 수정 |
+| ch3 | GitHub Actions 쓰기 권한 실패(403) | gh api로 default_workflow_permissions=write 설정 |
+| ch3 | CI 빌드 후 로컬 push 충돌 | git pull origin main --no-rebase 후 push |
