@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 )
 
-const version = "v0.1.3"
+const version = "v0.2.0"
 
 var counter atomic.Int64
 
