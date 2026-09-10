@@ -23,6 +23,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: VALKEY_ADDR
+              value: "valkey-primary.notiflex.svc.cluster.local:6379"
           readinessProbe:
             httpGet:
               path: /health
