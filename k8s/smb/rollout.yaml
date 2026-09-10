@@ -13,6 +13,7 @@ spec:
       labels:
         app: notiflex-api
     spec:
+      serviceAccountName: notiflex-api
       containers:
         - name: notiflex-api
           image: asia-northeast3-docker.pkg.dev/yunsoo-gitaiops-project/notiflex/api:sha-9fdb8fa
@@ -24,7 +25,14 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: VALKEY_ADDR
-              value: "valkey-primary.notiflex.svc.cluster.local:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: notiflex-secrets
+                  key: VALKEY_ADDR
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /health
@@ -37,6 +45,13 @@ spec:
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 20
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: notiflex-secrets
   strategy:
     blueGreen:
       activeService: notiflex-api
