@@ -21,9 +21,9 @@
 | ch4 | 4.4 알림 | ✅ | 2026-09-10 | PrometheusRule(PodRestartTooMany 5분/2회), Alertmanager 연동 |
 | ch5 | 5.2 트래픽 관리 | ✅ | 2026-09-10 | Gateway API(gke-l7-regional-external-managed), 외부 IP 35.216.103.153 |
 | ch5 | 5.3 무중단 배포 | ✅ | 2026-09-10 | Argo Rollouts Blue/Green, autoPromotionSeconds:30, v0.3.0 배포 확인 |
-| ch6 | 6.1 캐시 | ⬜ | | |
-| ch6 | 6.2 시크릿 관리 | ⬜ | | |
-| ch6 | 6.3 Canary 전환 | ⬜ | | |
+| ch6 | 6.1 캐시 | ✅ | 2026-09-10 | Bitnami Valkey 9.1.2 standalone, INCR으로 전역 카운터 구현 |
+| ch6 | 6.2 시크릿 관리 | ✅ | 2026-09-10 | GCP Secret Manager + Secret Store CSI Driver, Workload Identity, 파일 기반 읽기 |
+| ch6 | 6.3 Canary 전환 | ✅ | 2026-09-10 | Argo Rollouts Canary (25%→50%→75%→100%, 120s 관찰) |
 | ch7 | 7.2 멀티 노드풀 | ⬜ | | |
 | ch7 | 7.3 App of Apps | ⬜ | | |
 | ch7 | 7.4 멀티테넌시 | ⬜ | | |
@@ -48,14 +48,19 @@
 | 알림 | PrometheusRule + Alertmanager | Grafana Alerting, PagerDuty | GitOps 호환 CRD, kube-prometheus-stack에 포함, git blame으로 변경 추적 |
 | 외부 트래픽 | Gateway API (gke-l7-regional-external-managed) | Ingress NGINX, Istio | K8s 차세대 표준, GKE 네이티브(추가 설치 불필요), 역할 분리 |
 | 배포 전략 | Argo Rollouts Blue/Green | Rolling Update, Flagger | 트래픽 전환 즉시, ArgoCD 동일 생태계, 6장 Canary로 진화 가능 |
+| 캐시/카운터 | Valkey (Bitnami Helm, standalone) | Redis, Memcached | Redis 호환 오픈소스 포크, Helm 번들 간편 설치, Pod 간 전역 카운터 공유 |
+| 시크릿 관리 | GCP Secret Manager + Secret Store CSI Driver | K8s Secret(base64), Sealed Secrets, Vault | Git에 시크릿 값 미노출, Workload Identity로 키 없이 인증, 파일 마운트로 env 주입 없음 |
+| Canary 배포 | Argo Rollouts Canary (25→50→75→100%) | Blue/Green 유지, Flagger | 트래픽 점진적 전환으로 위험 최소화, Blue/Green 대비 strategy 필드만 수정, 동일 Argo 생태계 |
 
 ## 현재 버전
 
 | 컴포넌트 | 버전 | 변경 이력 |
 |---------|------|----------|
 | Go | 1.25 | 초기 설정 |
-| Notiflex 이미지 | sha-4280b31 (v0.3.0) | v0.1.0→v0.1.3→v0.2.0→v0.3.0, Blue/Green 배포 전환 |
+| Notiflex 이미지 | sha-1f27526 (v0.8.0) | v0.1.0→v0.3.0(Blue/Green)→v0.4.0(Valkey INCR)→v0.5.0(파일 기반)→v0.6.0(Password)→v0.8.0(Canary 검증) |
 | ArgoCD | v3.5.2 | ch3.2 설치 |
+| Valkey | 9.1.2 (Bitnami Chart 6.2.19) | ch6.1 설치, auth 활성화 |
+| Secret Store CSI Driver | 1.6.1 | ch6.2 설치 |
 | Kafka | | |
 | OTel SDK | | |
 
