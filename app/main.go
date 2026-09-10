@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-const version = "v0.7.0"
+const version = "v0.8.0"
 
 const valkeyAddrFile = "/mnt/secrets/valkey-addr"
 
