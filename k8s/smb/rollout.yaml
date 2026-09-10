@@ -4,7 +4,7 @@ metadata:
   name: notiflex-api
   namespace: notiflex
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: notiflex-api
@@ -50,8 +50,16 @@ spec:
             volumeAttributes:
               secretProviderClass: notiflex-secrets
   strategy:
-    blueGreen:
-      activeService: notiflex-api
-      previewService: notiflex-api-preview
-      autoPromotionEnabled: true
-      autoPromotionSeconds: 30
+    canary:
+      stableService: notiflex-api
+      canaryService: notiflex-api-canary
+      steps:
+        - setWeight: 25
+        - pause:
+            duration: 60s
+        - setWeight: 50
+        - pause:
+            duration: 60s
+        - setWeight: 75
+        - pause:
+            duration: 60s
