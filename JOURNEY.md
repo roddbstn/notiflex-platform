@@ -16,11 +16,11 @@
 | ch3 | 3.3 기능 추가 | ✅ | 2026-09-08 | /version 엔드포인트 추가(v0.1.1→v0.1.2→revert→v0.1.3), Rolling Update 확인 |
 | ch3 | 3.4 CI | ✅ | 2026-09-08 | GitHub Actions CI, GCP_SA_KEY/GCP_PROJECT_ID Secrets 등록, sha 태그 자동 빌드 |
 | ch3 | 3.5 CI-CD 연결 | ✅ | 2026-09-08 | CI가 deployment.yaml 이미지 태그 자동 커밋+push → ArgoCD 자동 감지 배포 |
-| ch4 | 4.2 메트릭 모니터링 | ⬜ | | |
-| ch4 | 4.3 로그 수집 | ⬜ | | |
-| ch4 | 4.4 알림 | ⬜ | | |
-| ch5 | 5.2 트래픽 관리 | ⬜ | | |
-| ch5 | 5.3 무중단 배포 | ⬜ | | |
+| ch4 | 4.2 메트릭 모니터링 | ✅ | 2026-09-10 | kube-prometheus-stack 설치, Prometheus/Grafana/Alertmanager Running |
+| ch4 | 4.3 로그 수집 | ✅ | 2026-09-10 | Loki SingleBinary + Fluent Bit DaemonSet, Grafana Explore에서 로그 확인 |
+| ch4 | 4.4 알림 | ✅ | 2026-09-10 | PrometheusRule(PodRestartTooMany 5분/2회), Alertmanager 연동 |
+| ch5 | 5.2 트래픽 관리 | ✅ | 2026-09-10 | Gateway API(gke-l7-regional-external-managed), 외부 IP 35.216.103.153 |
+| ch5 | 5.3 무중단 배포 | ✅ | 2026-09-10 | Argo Rollouts Blue/Green, autoPromotionSeconds:30, v0.3.0 배포 확인 |
 | ch6 | 6.1 캐시 | ⬜ | | |
 | ch6 | 6.2 시크릿 관리 | ⬜ | | |
 | ch6 | 6.3 Canary 전환 | ⬜ | | |
@@ -43,13 +43,18 @@
 | 컨테이너 베이스 이미지 | scratch | Alpine, Distroless | 최소 크기, 보안 표면 최소화 |
 | GitOps 도구 | ArgoCD | Flux, Spinnaker | GKE 친화적, UI 제공, 선언적 Application CRD, 활발한 생태계 |
 | CI 도구 | GitHub Actions | Cloud Build, Jenkins | 저장소 네이티브 통합, Secrets 관리 간편, 별도 서버 불필요 |
+| 메트릭 모니터링 | Prometheus + Grafana (kube-prometheus-stack) | Datadog, Google Cloud Monitoring | K8s 표준, 무료, Helm 번들, Loki·Tempo와 Grafana 통합 |
+| 로그 수집 | Loki + Fluent Bit | ELK Stack, Google Cloud Logging | 경량(128Mi), e2-medium 적합, Grafana 네이티브 통합 |
+| 알림 | PrometheusRule + Alertmanager | Grafana Alerting, PagerDuty | GitOps 호환 CRD, kube-prometheus-stack에 포함, git blame으로 변경 추적 |
+| 외부 트래픽 | Gateway API (gke-l7-regional-external-managed) | Ingress NGINX, Istio | K8s 차세대 표준, GKE 네이티브(추가 설치 불필요), 역할 분리 |
+| 배포 전략 | Argo Rollouts Blue/Green | Rolling Update, Flagger | 트래픽 전환 즉시, ArgoCD 동일 생태계, 6장 Canary로 진화 가능 |
 
 ## 현재 버전
 
 | 컴포넌트 | 버전 | 변경 이력 |
 |---------|------|----------|
 | Go | 1.25 | 초기 설정 |
-| Notiflex 이미지 | sha-fcfc730 (v0.1.3) | v0.1.0→v0.1.1→v0.1.2→revert→v0.1.3, CI 자동 배포 |
+| Notiflex 이미지 | sha-4280b31 (v0.3.0) | v0.1.0→v0.1.3→v0.2.0→v0.3.0, Blue/Green 배포 전환 |
 | ArgoCD | v3.5.2 | ch3.2 설치 |
 | Kafka | | |
 | OTel SDK | | |
