@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-const version = "v0.4.0"
+const version = "v0.5.0"
+
+const valkeyAddrFile = "/mnt/secrets/valkey-addr"
 
 func main() {
 	http.HandleFunc("/health", healthHandler)
@@ -35,10 +37,12 @@ func versionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func idHandler(w http.ResponseWriter, r *http.Request) {
-	addr := os.Getenv("VALKEY_ADDR")
-	if addr == "" {
-		addr = "valkey-primary:6379"
+	data, err := os.ReadFile(valkeyAddrFile)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to read valkey addr: %v", err), http.StatusInternalServerError)
+		return
 	}
+	addr := strings.TrimSpace(string(data))
 
 	id, err := valkeyIncr(addr, "notiflex:counter")
 	if err != nil {

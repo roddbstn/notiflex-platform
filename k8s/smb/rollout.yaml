@@ -24,11 +24,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: VALKEY_ADDR
-              valueFrom:
-                secretKeyRef:
-                  name: notiflex-secrets
-                  key: VALKEY_ADDR
           volumeMounts:
             - name: secrets-store
               mountPath: /mnt/secrets
