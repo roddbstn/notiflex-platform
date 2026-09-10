@@ -24,6 +24,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: VALKEY_PASSWORD_FILE
+              value: "/mnt/secrets/valkey-password"
           volumeMounts:
             - name: secrets-store
               mountPath: /mnt/secrets
