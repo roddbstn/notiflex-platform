@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-const version = "v0.5.0"
+const version = "v0.6.0"
 
 const valkeyAddrFile = "/mnt/secrets/valkey-addr"
 
@@ -44,7 +44,9 @@ func idHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	addr := strings.TrimSpace(string(data))
 
-	id, err := valkeyIncr(addr, "notiflex:counter")
+	password := valkeyPassword()
+
+	id, err := valkeyIncr(addr, password, "notiflex:counter")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("valkey error: %v", err), http.StatusInternalServerError)
 		return
@@ -62,20 +64,49 @@ func idHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// valkeyIncr sends INCR key via RESP protocol and returns the new value.
-func valkeyIncr(addr, key string) (int64, error) {
+// valkeyPassword returns the Valkey password.
+// If VALKEY_PASSWORD_FILE is set, reads from that file.
+// Falls back to VALKEY_PASSWORD env var.
+func valkeyPassword() string {
+	if path := os.Getenv("VALKEY_PASSWORD_FILE"); path != "" {
+		data, err := os.ReadFile(path)
+		if err == nil {
+			return strings.TrimSpace(string(data))
+		}
+	}
+	return os.Getenv("VALKEY_PASSWORD")
+}
+
+// valkeyIncr sends AUTH (if password set) then INCR via RESP protocol.
+func valkeyIncr(addr, password, key string) (int64, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return 0, err
 	}
 	defer conn.Close()
 
+	reader := bufio.NewReader(conn)
+
+	if password != "" {
+		auth := fmt.Sprintf("*2\r\n$4\r\nAUTH\r\n$%d\r\n%s\r\n", len(password), password)
+		if _, err := fmt.Fprint(conn, auth); err != nil {
+			return 0, err
+		}
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			return 0, err
+		}
+		if !strings.HasPrefix(strings.TrimSpace(line), "+OK") {
+			return 0, fmt.Errorf("AUTH failed: %s", strings.TrimSpace(line))
+		}
+	}
+
 	cmd := fmt.Sprintf("*2\r\n$4\r\nINCR\r\n$%d\r\n%s\r\n", len(key), key)
 	if _, err := fmt.Fprint(conn, cmd); err != nil {
 		return 0, err
 	}
 
-	line, err := bufio.NewReader(conn).ReadString('\n')
+	line, err := reader.ReadString('\n')
 	if err != nil {
 		return 0, err
 	}
